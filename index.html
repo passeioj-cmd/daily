@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>유튜브 랜덤 플레이어</title>
+    <title>영상만나 시청</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -25,7 +25,7 @@
                     ▶ 재생 시작
                 </button>
                 <p class="text-white/70 mt-6">
-                    랜덤 그룹에서 셔플 재생이 시작됩니다
+                    전체 영상을 랜덤 재생합니다
                 </p>
             </div>
 
@@ -46,7 +46,7 @@
                             <h2 id="videoTitle" class="text-2xl font-bold text-white break-words"></h2>
                         </div>
                         <div class="text-right">
-                            <p class="text-white/60 text-sm">현재 그룹</p>
+                            <p class="text-white/60 text-sm">현재 묶음</p>
                             <p id="groupName" class="text-xl font-bold text-purple-300"></p>
                         </div>
                     </div>
@@ -67,8 +67,8 @@
                         <button onclick="playNext()" class="flex-1 bg-white/20 hover:bg-white/30 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition">
                             ⏭ 다음 곡
                         </button>
-                        <button onclick="selectNewGroup()" class="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition">
-                            🔄 새 그룹 선택
+                        <button onclick="reshuffleAll()" class="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition">
+                            🔄 전체 재셔플
                         </button>
                     </div>
                 </div>
@@ -84,52 +84,60 @@
 
     <script>
         const videoGroups = {
-            group1: [
-                { id: 'qCmP6miWCAE', title: 'Who Am I According to the New Testament?' },
-                { id: '1QQ0tVHUT9U', title: 'Do You Master the Fulfilment of the New Testament Revelation?' },
-                { id: '5asf894FjO8', title: 'What Kind of Book is Revelation' },
-                { id: '-37D6LxFyNw', title: 'Shincheonji Church of Jesus\' Position on CBS Report' },
-                { id: 'GRuyLELNq4E', title: 'Shincheonji Church of Jesus\' position on JTBC\'s August 8 report' },
-                { id: 'OvrePT3_E8A', title: 'The War in the New Testament Revelation Is the Final Battle' },
-                { id: 'VO9R81weMKM', title: 'The Qualifications and Order for Salvation' },
-                { id: 'TqwtaK2wS7s', title: 'God\'s Final Work: The Fulfillment of Revelation' },
-                { id: 'phhkJxlZn4w', title: 'Shincheonji Church of Jesus\'s Position Regarding JTBC\'s Report' },
-                { id: 'Pt0HPR815U8', title: 'Politicians Must Stop Politically Exploiting Shincheonji' },
-                { id: 'mdQQiqeSkmI', title: 'Do You Master the Book of Revelation in the New Testament?' },
-                { id: 'vOSA63vcYrI', title: 'Prophecies and Fulfillment of Jesus\' First and Second Comings' }
-            ],
-            group2: [
-                { id: 'qArHpTAFewY', title: '新天地耶稣教会就2025年8月8日JTBC报道的声明' },
-                { id: 'HzLt6QL-7Fs', title: '新天地耶稣教会就2025年8月7日JTBC报道的声明' },
-                { id: '-Mmy__r4p6s', title: '新天地耶稣教会就CBS失实报道发表严正声明' },
-                { id: 'G-Zg83TgXSU', title: '2025年7月12日 新天地话语大圣会' },
-                { id: 'TBT82zLMWJQ', title: '【天国书信】耶稣的新约"新国度新民族"' },
-                { id: '5gS3Q2CKzpY', title: '【天国书信】新天地耶稣教证据帐幕圣殿和逾越节' },
-                { id: '-L8x4DFQwUk', title: '【天国书信】新约启示录中预言的背道者、灭亡者和救恩者' },
-                { id: 'P3KsTTjanoI', title: '【天国书信】新约启示录成就的事件' },
-                { id: 'aLKqvoBqRQk', title: '【天国书信】第十二次访问菲律宾大集会' },
-                { id: 'O5xLkR6TtlY', title: '【天国书信】撒两样种子与新约预言' },
-                { id: 'hmhd1lXoWps', title: '【天国书信】旧约和新约的成就' },
-                { id: '1-94D9i7-is', title: '【天国书信】天地万物苦待新天地运势' }
-            ],
-            group3: [
-                { id: 'PwFQeOgF9rA', title: '[말씀광장 열린예배] 모두를 위한 글자, 모두를 위한 말씀' },
-                { id: 'auFMeCaZp70', title: '[말씀광장 열린예배] 주 재림과 말세의 징조(2)' },
-                { id: 'SjD3_3iKa3A', title: '[말씀광장 열린예배] 주 재림과 말세의 징조(1)' },
-                { id: 'vSlDTqYG0xk', title: '[말씀광장 열린예배] 예루살렘에 입성하신 예수님' },
-                { id: 'K5ozTjUX2n8', title: '[말씀광장 열린예배] 천국의 열쇠를 주신 예수님' },
-                { id: '38uVbu_S1VY', title: '[말씀광장 열린예배] 안식일의 주인이신 예수님' },
-                { id: 'CEykQpzrGZ8', title: '[말씀광장 열린예배] 많은 이적을 행하신 예수님' },
-                { id: '9vxxpbPTCGE', title: '[말씀광장 열린예배] 시험을 이기고 역사를 시작하신 예수님' },
-                { id: 'lr_aaAl-skw', title: '[말씀광장 열린예배] 물 세례와 성령 세례' },
-                { id: 'WyyteaJ_7mo', title: '[말씀광장 열린예배] 예수님의 영육 족보와 씨' },
-                { id: 'H63ynq_Vadc', title: '[말씀광장 열린예배] 참된 그리스도인' },
-                { id: 'ny3hMjeIEFs', title: '[말씀광장 열린예배] 영의 생각' }
-            ]
+            group1: {
+                name: 'Shincheonji EN',
+                videos: [
+                    { id: 'qCmP6miWCAE', title: 'Who Am I According to the New Testament?' },
+                    { id: '1QQ0tVHUT9U', title: 'Do You Master the Fulfilment of the New Testament Revelation?' },
+                    { id: '5asf894FjO8', title: 'What Kind of Book is Revelation' },
+                    { id: '-37D6LxFyNw', title: 'Shincheonji Church of Jesus\' Position on CBS Report' },
+                    { id: 'GRuyLELNq4E', title: 'Shincheonji Church of Jesus\' position on JTBC\'s August 8 report' },
+                    { id: 'OvrePT3_E8A', title: 'The War in the New Testament Revelation Is the Final Battle' },
+                    { id: 'VO9R81weMKM', title: 'The Qualifications and Order for Salvation' },
+                    { id: 'TqwtaK2wS7s', title: 'God\'s Final Work: The Fulfillment of Revelation' },
+                    { id: 'phhkJxlZn4w', title: 'Shincheonji Church of Jesus\'s Position Regarding JTBC\'s Report' },
+                    { id: 'Pt0HPR815U8', title: 'Politicians Must Stop Politically Exploiting Shincheonji' },
+                    { id: 'mdQQiqeSkmI', title: 'Do You Master the Book of Revelation in the New Testament?' },
+                    { id: 'vOSA63vcYrI', title: 'Prophecies and Fulfillment of Jesus\' First and Second Comings' }
+                ]
+            },
+            group2: {
+                name: 'Shincheonji CH',
+                videos: [
+                    { id: 'qArHpTAFewY', title: '新天地耶稣教会就2025年8月8日JTBC报道的声明' },
+                    { id: 'HzLt6QL-7Fs', title: '新天地耶稣教会就2025年8月7日JTBC报道的声明' },
+                    { id: '-Mmy__r4p6s', title: '新天地耶稣教会就CBS失实报道发表严正声明' },
+                    { id: 'G-Zg83TgXSU', title: '2025年7月12日 新天地话语大圣会' },
+                    { id: 'TBT82zLMWJQ', title: '【天国书信】耶稣的新约"新国度新民族"' },
+                    { id: '5gS3Q2CKzpY', title: '【天国书信】新天地耶稣教证据帐幕圣殿和逾越节' },
+                    { id: '-L8x4DFQwUk', title: '【天国书信】新约启示录中预言的背道者、灭亡者和救恩者' },
+                    { id: 'P3KsTTjanoI', title: '【天国书信】新约启示录成就的事件' },
+                    { id: 'aLKqvoBqRQk', title: '【天国书信】第十二次访问菲律宾大集会' },
+                    { id: 'O5xLkR6TtlY', title: '【天国书信】撒两样种子与新约预言' },
+                    { id: 'hmhd1lXoWps', title: '【天国书信】旧约和新约的成就' },
+                    { id: '1-94D9i7-is', title: '【天国书信】天地万物苦待新天地运势' }
+                ]
+            },
+            group3: {
+                name: '열린예배',
+                videos: [
+                    { id: 'PwFQeOgF9rA', title: '[말씀광장 열린예배] 모두를 위한 글자, 모두를 위한 말씀' },
+                    { id: 'auFMeCaZp70', title: '[말씀광장 열린예배] 주 재림과 말세의 징조(2)' },
+                    { id: 'SjD3_3iKa3A', title: '[말씀광장 열린예배] 주 재림과 말세의 징조(1)' },
+                    { id: 'vSlDTqYG0xk', title: '[말씀광장 열린예배] 예루살렘에 입성하신 예수님' },
+                    { id: 'K5ozTjUX2n8', title: '[말씀광장 열린예배] 천국의 열쇠를 주신 예수님' },
+                    { id: '38uVbu_S1VY', title: '[말씀광장 열린예배] 안식일의 주인이신 예수님' },
+                    { id: 'CEykQpzrGZ8', title: '[말씀광장 열린예배] 많은 이적을 행하신 예수님' },
+                    { id: '9vxxpbPTCGE', title: '[말씀광장 열린예배] 시험을 이기고 역사를 시작하신 예수님' },
+                    { id: 'lr_aaAl-skw', title: '[말씀광장 열린예배] 물 세례와 성령 세례' },
+                    { id: 'WyyteaJ_7mo', title: '[말씀광장 열린예배] 예수님의 영육 족보와 씨' },
+                    { id: 'H63ynq_Vadc', title: '[말씀광장 열린예배] 참된 그리스도인' },
+                    { id: 'ny3hMjeIEFs', title: '[말씀광장 열린예배] 영의 생각' }
+                ]
+            }
         };
 
-        let currentGroup = null;
-        let playlist = [];
+        let allVideos = [];
         let currentIndex = 0;
 
         function shuffleArray(array) {
@@ -141,15 +149,27 @@
             return shuffled;
         }
 
-        function selectNewGroup() {
-            const groups = ['group1', 'group2', 'group3'];
-            const randomGroup = groups[Math.floor(Math.random() * groups.length)];
-            const shuffledVideos = shuffleArray(videoGroups[randomGroup]);
+        function createShuffledPlaylist() {
+            // 모든 영상을 그룹 정보와 함께 하나의 배열로 합치기
+            const combined = [];
+            Object.keys(videoGroups).forEach(groupKey => {
+                const group = videoGroups[groupKey];
+                group.videos.forEach(video => {
+                    combined.push({
+                        ...video,
+                        groupKey: groupKey,
+                        groupName: group.name
+                    });
+                });
+            });
             
-            currentGroup = randomGroup;
-            playlist = shuffledVideos;
+            // 전체 셔플
+            allVideos = shuffleArray(combined);
             currentIndex = 0;
-            
+        }
+
+        function reshuffleAll() {
+            createShuffledPlaylist();
             updateUI();
             loadVideo();
         }
@@ -157,11 +177,12 @@
         function startPlaying() {
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('playerScreen').classList.remove('hidden');
-            selectNewGroup();
+            createShuffledPlaylist();
+            loadVideo();
         }
 
         function loadVideo() {
-            const video = playlist[currentIndex];
+            const video = allVideos[currentIndex];
             const iframe = document.getElementById('videoPlayer');
             iframe.src = `https://www.youtube.com/embed/${video.id}?autoplay=1&enablejsapi=1`;
             
@@ -169,22 +190,17 @@
         }
 
         function updateUI() {
-            const video = playlist[currentIndex];
+            const video = allVideos[currentIndex];
             
             // 제목 업데이트
             document.getElementById('videoTitle').textContent = video.title;
             
             // 그룹명 업데이트
-            const groupNames = {
-                'group1': 'Shincheonji EN',
-                'group2': 'Shincheonji CH',
-                'group3': '열린예배'
-            };
-            document.getElementById('groupName').textContent = groupNames[currentGroup];
+            document.getElementById('groupName').textContent = video.groupName;
             
             // 진행률 업데이트
-            document.getElementById('progress').textContent = `${currentIndex + 1} / ${playlist.length}`;
-            const percentage = Math.round(((currentIndex + 1) / playlist.length) * 100);
+            document.getElementById('progress').textContent = `${currentIndex + 1} / ${allVideos.length}`;
+            const percentage = Math.round(((currentIndex + 1) / allVideos.length) * 100);
             document.getElementById('percentage').textContent = `${percentage}% 완료`;
             document.getElementById('progressBar').style.width = `${percentage}%`;
             
@@ -196,7 +212,7 @@
             const playlistEl = document.getElementById('playlist');
             playlistEl.innerHTML = '';
             
-            playlist.forEach((video, idx) => {
+            allVideos.forEach((video, idx) => {
                 const item = document.createElement('div');
                 let bgClass, textClass, extraContent = '';
                 
@@ -217,7 +233,10 @@
                 item.innerHTML = `
                     <div class="flex items-center gap-3">
                         <span class="font-mono text-sm ${textClass}">${idx + 1}</span>
-                        <span class="flex-1 ${textClass}">${video.title}</span>
+                        <div class="flex-1 ${textClass}">
+                            <div class="text-xs text-purple-300 mb-1">${video.groupName}</div>
+                            <div>${video.title}</div>
+                        </div>
                         ${extraContent}
                     </div>
                 `;
@@ -227,12 +246,13 @@
         }
 
         function playNext() {
-            if (currentIndex < playlist.length - 1) {
+            if (currentIndex < allVideos.length - 1) {
                 currentIndex++;
                 loadVideo();
             } else {
-                // 모든 곡 재생 완료 - 새로운 그룹 선택
-                selectNewGroup();
+                // 모든 곡 재생 완료 - 전체 재셔플
+                createShuffledPlaylist();
+                loadVideo();
             }
         }
 
